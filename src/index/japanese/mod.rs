@@ -21,12 +21,23 @@ pub struct JapaneseIndex {
 pub struct InsertItem {
     item: Item,
     kanji_aligns: Vec<String>,
+    normal_kana: Option<String>,
 }
 
 impl InsertItem {
     #[inline]
     pub fn new(item: Item, kanji_aligns: Vec<String>) -> Self {
-        Self { item, kanji_aligns }
+        Self {
+            item,
+            kanji_aligns,
+            normal_kana: None,
+        }
+    }
+
+    /// Set the insert item's normal kana.
+    #[inline]
+    pub fn set_normal_kana(&mut self, normal_kana: Option<String>) {
+        self.normal_kana = normal_kana;
     }
 }
 
@@ -38,10 +49,10 @@ impl JapaneseIndex {
 
         let mut index_item = Vec::with_capacity(items.len());
 
-        for (pos, item) in items.iter().enumerate() {
+        for (pos, iitem) in items.iter().enumerate() {
             let id = pos as u32;
-            let kanji_aligns = &item.kanji_aligns;
-            let item = item.item.clone();
+            let kanji_aligns = &iitem.kanji_aligns;
+            let item = iitem.item.clone();
 
             insert_or_update(&mut trie, &item.kana, id);
 
@@ -55,6 +66,10 @@ impl JapaneseIndex {
 
             for item in kanji_aligns {
                 insert_or_update(&mut kanji_align, &item, id);
+            }
+
+            if let Some(ref i) = iitem.normal_kana {
+                insert_or_update(&mut trie, i, id);
             }
 
             index_item.push(item);
