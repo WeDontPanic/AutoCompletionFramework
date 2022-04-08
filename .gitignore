@@ -1,0 +1,10 @@
+/target
+Cargo.lock
+/index
+new_jp_index
+de-DE
+en-US
+1_2_all_freq.txt
+german_frequencies.txt
+new_word_de-DE
+new_word_*
