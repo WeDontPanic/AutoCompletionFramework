@@ -64,7 +64,7 @@ impl super::super::IndexItem for Item {
                 let query_len: usize = query.chars().count();
                 let word_len: usize = word.chars().count();
 
-                let normalized = (1.0 - (query_len as f32 / word_len as f32)) * 10.0;
+                let normalized = (1.0 - (query_len as f32 / word_len as f32)) * 1000.0;
                 return (1000.0 - normalized) as u16;
             } else {
                 return (strsim::normalized_levenshtein(&word, &query) * 1000.0) as u16;

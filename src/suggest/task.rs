@@ -74,7 +74,7 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
         }
 
         for i in &self.custom_entries {
-            if !self.item_allowed(i) || added_items.contains(&i) {
+            if !self.item_allowed(i) || added_items.contains(i) {
                 continue;
             }
             added_items.insert(*i);
@@ -85,7 +85,7 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
             .into_iter()
             .inspect(|i| {
                 if self.debug {
-                    println!("{i:?}");
+                    println!("{i:?} (w-freq: {})", i.0.inner().frequency());
                 }
             })
             .map(|i| i.0.inner().to_output())

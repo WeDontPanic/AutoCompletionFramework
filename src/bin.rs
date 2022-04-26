@@ -28,8 +28,8 @@ use autocompletion::{
 
 pub fn main() {
     //let index = load_jp();
-    let index: BasicIndex =
-        bincode::deserialize_from(BufReader::new(File::open("./new_word_de-DE").unwrap())).unwrap();
+    let index: JapaneseIndex =
+        bincode::deserialize_from(BufReader::new(File::open("./kanji_meanings").unwrap())).unwrap();
     //let index = build();
     //bincode::serialize_into(BufWriter::new(File::create("index").unwrap()), &index).unwrap();
 
@@ -52,8 +52,8 @@ fn search<T: SuggestionIndex + 'static>(engine: &T, query: &str) {
     let mut task = SuggestionTask::new(30).debug();
 
     let mut query = SuggestionQuery::new(engine, query);
-    query.weights.str_weight = 0.1;
-    query.weights.freq_weight = 1.9;
+    query.weights.str_weight = 1.4;
+    query.weights.freq_weight = 0.6;
 
     /*
     query.add_extension(SimilarTermsExtension::new(engine.get_index()));
@@ -63,14 +63,18 @@ fn search<T: SuggestionIndex + 'static>(engine: &T, query: &str) {
     lpe.options.weights.str_weight = 0.8;
     //query.add_extension(lpe);
 
+    /*
     let mut ste = SimilarTermsExtension::new(engine, 7);
     ste.options.threshold = 10;
     query.add_extension(ste);
+    */
 
+    /*
     let mut ste = SimilarTermsExtension::new(engine, 5);
     ste.options.weights.freq_weight = 0.01;
     ste.options.weights.str_weight = 1.99;
     query.add_extension(ste);
+    */
 
     task.add_query(query);
     let completions = task.search();
