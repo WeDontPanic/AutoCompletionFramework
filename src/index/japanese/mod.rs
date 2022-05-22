@@ -13,8 +13,8 @@ use std::collections::HashSet;
 /// Japanese suggestion index
 #[derive(Serialize, Deserialize)]
 pub struct JapaneseIndex {
-    trie: Trie<BString, Vec<u32>>,
-    items: Vec<Item>,
+    pub trie: Trie<BString, Vec<u32>>,
+    pub items: Vec<Item>,
     kanji_align: Trie<BString, Vec<u32>>,
 }
 
@@ -83,7 +83,7 @@ impl JapaneseIndex {
     }
 
     #[inline]
-    fn get_item(&self, id: u32) -> &Item {
+    pub fn get_item(&self, id: u32) -> &Item {
         &self.items[id as usize]
     }
 }
@@ -192,7 +192,7 @@ fn insert_or_update(trie: &mut Trie<BString, Vec<u32>>, item: &str, id: u32) {
 pub fn jp_format(inp: &str) -> String {
     let mut out = inp.to_string();
     let to_replace = &[
-        "(", ")", ".", ",", "/", "[", "]", "?", "!", "{", "}", "、", "。",
+        "(", ")", ".", ",", "/", "[", "]", "?", "!", "{", "}", "、", "。", "・",
     ];
     for tr in to_replace {
         out = out.replace(tr, "");

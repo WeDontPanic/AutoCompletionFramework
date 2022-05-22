@@ -7,12 +7,12 @@ use crate::{
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Item {
-    pub(crate) word_id: u32,
-    pub(crate) kana: String,
-    pub(crate) kanji: Option<String>,
-    pub(crate) alternative: Vec<String>,
+    pub word_id: u32,
+    pub kana: String,
+    pub kanji: Option<String>,
+    pub alternative: Vec<String>,
 
-    pub(crate) frequency: f64,
+    pub frequency: f64,
 
     // kana hashes
     pub(crate) hash: Option<jpeudex::Hash>,

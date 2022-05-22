@@ -130,7 +130,9 @@ impl SuggestionIndex for BasicIndex {
 // Basic input formatting helper
 pub fn basic_format(inp: &str) -> String {
     let mut out = inp.to_string();
-    let to_replace = &["(", ")", ".", ",", "/", "[", "]", "?", "{", "}", "、", "。"];
+    let to_replace = &[
+        "(", ")", ".", ",", "/", "[", "]", "?", "{", "}", "、", "。", "・",
+    ];
     for tr in to_replace {
         out = out.replace(tr, "");
     }

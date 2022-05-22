@@ -71,7 +71,7 @@ impl<'index, 'ext> SuggestionQuery<'index, 'ext> {
         queue.into_iter().map(|i| i.0).collect::<Vec<_>>()
     }
 
-    pub(crate) fn order_items<'a>(
+    pub fn order_items<'a>(
         &self,
         inp: Vec<EngineItem<'a>>,
         rel_calc: RelevanceCalc,
