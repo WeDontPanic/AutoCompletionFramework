@@ -1,7 +1,5 @@
-use std::collections::HashSet;
-
 use super::query::SuggestionQuery;
-use priority_container::PrioContainerMax;
+use priority_container::unique::UniquePrioContainerMax;
 
 use crate::{
     index::{IndexItem, Output},
@@ -51,8 +49,7 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
 
     /// Performs the suggestion search
     pub fn search(&self) -> Vec<Output> {
-        let mut out = PrioContainerMax::new(self.limit);
-        let mut added_items = HashSet::with_capacity(self.limit);
+        let mut out = UniquePrioContainerMax::new(self.limit);
         let mut added = 0;
 
         for query in &self.queries {
@@ -69,15 +66,13 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
             added += query_res.len();
             for i in query_res.into_iter().filter(|i| self.item_allowed(i)) {
                 out.insert(i);
-                added_items.insert(i);
             }
         }
 
         for i in &self.custom_entries {
-            if !self.item_allowed(i) || added_items.contains(i) {
+            if !self.item_allowed(i) {
                 continue;
             }
-            added_items.insert(*i);
             out.insert(*i);
         }
 
