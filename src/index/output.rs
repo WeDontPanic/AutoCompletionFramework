@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// A single suggestion in response
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Ord, PartialOrd, Clone)]
 pub struct Output {
     pub primary: String,
     #[serde(skip_serializing_if = "Option::is_none")]

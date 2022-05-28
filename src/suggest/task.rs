@@ -1,4 +1,5 @@
 use super::query::SuggestionQuery;
+use order_struct::order_nh::OrderVal;
 use priority_container::unique::UniquePrioContainerMax;
 
 use crate::{
@@ -65,25 +66,20 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
 
             added += query_res.len();
             for i in query_res.into_iter().filter(|i| self.item_allowed(i)) {
-                out.insert(i);
+                out.insert(OrderVal::new(i.to_output(), i.get_relevance()));
             }
         }
 
-        for i in &self.custom_entries {
-            if !self.item_allowed(i) {
-                continue;
-            }
-            out.insert(*i);
-        }
+        let cust_add = self
+            .custom_entries
+            .iter()
+            .filter(|i| self.item_allowed(i))
+            .map(|i| OrderVal::new((*i).to_output(), i.get_relevance()));
+        out.extend(cust_add);
 
         let mut out = out
             .into_iter()
-            .inspect(|i| {
-                if self.debug {
-                    println!("{i:?} (w-freq: {})", i.0.inner().frequency());
-                }
-            })
-            .map(|i| i.0.inner().to_output())
+            .map(|i| i.0.into_inner())
             .collect::<Vec<_>>();
         out.reverse();
         out
