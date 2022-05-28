@@ -14,6 +14,7 @@ pub struct SuggestionTask<'index, 'a, 'ext> {
     limit: usize,
     debug: bool,
     filter: Option<Box<dyn Fn(&dyn IndexItem) -> bool + 'ext>>,
+    rel_mod: Option<Box<dyn Fn(&EngineItem, u16) -> u16 + 'ext>>,
 }
 
 impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
@@ -25,7 +26,13 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
             custom_entries: vec![],
             debug: false,
             filter: None,
+            rel_mod: None,
         }
+    }
+
+    /// Sets a filter for output items
+    pub fn set_rel_mod<F: Fn(&EngineItem, u16) -> u16 + 'ext>(&mut self, rel_mod: F) {
+        self.rel_mod = Some(Box::new(rel_mod))
     }
 
     /// Sets a filter for output items
@@ -66,6 +73,7 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
 
             added += query_res.len();
             for i in query_res.into_iter().filter(|i| self.item_allowed(i)) {
+                let i = self.apply_rel_mod(i);
                 out.insert(OrderVal::new(i.to_output(), i.get_relevance()));
             }
         }
@@ -74,7 +82,8 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
             .custom_entries
             .iter()
             .filter(|i| self.item_allowed(i))
-            .map(|i| OrderVal::new((*i).to_output(), i.get_relevance()));
+            .map(|i| self.apply_rel_mod(*i))
+            .map(|i| OrderVal::new(i.to_output(), i.get_relevance()));
         out.extend(cust_add);
 
         let mut out = out
@@ -83,6 +92,15 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
             .collect::<Vec<_>>();
         out.reverse();
         out
+    }
+
+    #[inline]
+    fn apply_rel_mod<'r>(&self, mut item: EngineItem<'r>) -> EngineItem<'r> {
+        if let Some(ref rel_mod) = self.rel_mod {
+            let rel = rel_mod(&item, item.get_relevance());
+            item.set_relevance(rel);
+        }
+        item
     }
 
     /// Returns `true` if the item `i` should not get filtered out
