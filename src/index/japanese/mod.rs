@@ -90,7 +90,7 @@ impl JapaneseIndex {
 
 impl SuggestionIndex for JapaneseIndex {
     fn predictions(&self, inp: &str, limit: usize) -> Vec<EngineItem> {
-        let mut prio_container = PrioContainerMax::new(limit);
+        let mut prio_container = PrioContainerMax::new_allocated(limit);
         let mut pev_dups: HashSet<&Item> = HashSet::with_capacity(limit * 2);
 
         let items = self.trie.iter_prefix_str(inp);
@@ -121,7 +121,7 @@ impl SuggestionIndex for JapaneseIndex {
             None => return vec![],
         };
 
-        let mut out = PrioContainer::new(limit);
+        let mut out = PrioContainer::new_allocated(limit);
 
         let prefix = inp.char_indices().nth(1).map(|i| &inp[0..i.0]).unwrap();
 

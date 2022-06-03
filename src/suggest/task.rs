@@ -57,7 +57,7 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
 
     /// Performs the suggestion search
     pub fn search(&self) -> Vec<Output> {
-        let mut out = UniquePrioContainerMax::new(self.limit);
+        let mut out = UniquePrioContainerMax::new_allocated(self.limit);
         let mut added = 0;
 
         for query in &self.queries {

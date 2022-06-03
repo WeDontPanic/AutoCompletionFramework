@@ -54,7 +54,7 @@ impl BasicIndex {
 
 impl SuggestionIndex for BasicIndex {
     fn predictions(&self, inp: &str, limit: usize) -> Vec<EngineItem> {
-        let mut prio_container = PrioContainer::new(limit);
+        let mut prio_container = PrioContainer::new_allocated(limit);
 
         let items = self.trie.iter_prefix_str(inp).map(|i| {
             OrderBy::new(self.get_item(*i.1), |a, b| {
@@ -89,7 +89,7 @@ impl SuggestionIndex for BasicIndex {
         }
 
         let query_hash = eudex::Hash::new(inp);
-        let mut out = PrioContainer::new(limit);
+        let mut out = PrioContainer::new_allocated(limit);
 
         let prefix = inp.char_indices().nth(1).map(|i| &inp[0..i.0]).unwrap();
 
