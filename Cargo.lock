@@ -382,7 +382,7 @@ dependencies = [
 [[package]]
 name = "priority_container"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/PrioContainer#cdc87d3c5e56b4a1a02663e2403fb15e761b337a"
+source = "git+https://github.com/JojiiOfficial/PrioContainer#f68f0cd57edba3fcbc025bb108f0648adf73111d"
 
 [[package]]
 name = "proc-macro2"

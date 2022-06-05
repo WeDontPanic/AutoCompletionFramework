@@ -86,10 +86,7 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
             .map(|i| OrderVal::new(i.to_output(), i.get_relevance()));
         out.extend(cust_add);
 
-        let mut out = out
-            .into_iter()
-            .map(|i| i.0.into_inner())
-            .collect::<Vec<_>>();
+        let mut out = out.into_iter().map(|i| i.into_inner()).collect::<Vec<_>>();
         out.reverse();
         out
     }
