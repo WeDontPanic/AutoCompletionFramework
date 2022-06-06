@@ -102,7 +102,7 @@ impl SuggestionIndex for JapaneseIndex {
             }
 
             prio_container.insert(OrderBy::new(word, |a, b| {
-                FloatOrd(b.frequency).cmp(&FloatOrd(a.frequency)).reverse()
+                FloatOrd(a.frequency).cmp(&FloatOrd(b.frequency))
             }));
 
             pev_dups.insert(word);

@@ -1,6 +1,4 @@
-use std::collections::HashSet;
-
-use priority_container::PrioContainerMax;
+use priority_container::{UniquePrioContainerMax};
 
 use crate::{
     fast_str_diff::FastStringDist,
@@ -47,9 +45,7 @@ impl<'index, 'ext> SuggestionQuery<'index, 'ext> {
 
         let pred_ordered = self.order_items(predictions, RelevanceCalc::new(self.weights));
 
-        let mut added = HashSet::with_capacity(limit);
-        let mut queue = PrioContainerMax::new(limit);
-        added.extend(pred_ordered.iter());
+        let mut queue = UniquePrioContainerMax::new(limit);
         queue.extend(pred_ordered);
 
         for extension in &self.extensions {
@@ -59,16 +55,10 @@ impl<'index, 'ext> SuggestionQuery<'index, 'ext> {
 
             let ext_res = extension.run(&self, self.weights.total_weight);
             pred_len += ext_res.len();
-            for i in ext_res {
-                if added.contains(&i) {
-                    continue;
-                }
-                added.insert(i);
-                queue.insert(i);
-            }
+            queue.extend(ext_res);
         }
 
-        queue.into_iter().map(|i| i.0).collect::<Vec<_>>()
+        queue.into_iter().collect::<Vec<_>>()
     }
 
     pub fn order_items<'a>(

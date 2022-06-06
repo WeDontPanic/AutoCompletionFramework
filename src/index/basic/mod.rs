@@ -5,7 +5,7 @@ use order_struct::{float_ord::FloatOrd, OrderBy};
 
 use super::{IndexItem, SuggestionIndex};
 use crate::relevance::item::EngineItem;
-use priority_container::PrioContainer;
+use priority_container::{PrioContainer, PrioContainerMax};
 use qp_trie::{wrapper::BString, Trie};
 use serde::{Deserialize, Serialize};
 
@@ -54,13 +54,11 @@ impl BasicIndex {
 
 impl SuggestionIndex for BasicIndex {
     fn predictions(&self, inp: &str, limit: usize) -> Vec<EngineItem> {
-        let mut prio_container = PrioContainer::new_allocated(limit);
+        let mut prio_container = PrioContainerMax::new_allocated(limit);
 
         let items = self.trie.iter_prefix_str(inp).map(|i| {
             OrderBy::new(self.get_item(*i.1), |a, b| {
-                FloatOrd(a.frequency())
-                    .cmp(&FloatOrd(b.frequency()))
-                    .reverse()
+                FloatOrd(a.frequency()).cmp(&FloatOrd(b.frequency()))
             })
         });
 
@@ -69,7 +67,7 @@ impl SuggestionIndex for BasicIndex {
         // PrioContainer only yields `limit` items
         prio_container
             .into_iter()
-            .map(|i| i.into_inner().into_engine_item())
+            .map(|i| i.0.into_inner().into_engine_item())
             .collect()
     }
 

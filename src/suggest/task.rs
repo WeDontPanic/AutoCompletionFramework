@@ -1,6 +1,6 @@
 use super::query::SuggestionQuery;
 use order_struct::order_nh::OrderVal;
-use priority_container::unique::UniquePrioContainerMax;
+use priority_container::UniquePrioContainerMax;
 
 use crate::{
     index::{IndexItem, Output},
