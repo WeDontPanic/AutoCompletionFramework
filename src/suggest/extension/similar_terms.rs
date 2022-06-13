@@ -46,7 +46,7 @@ impl<'a> Extension<'a> for SimilarTermsExtension<'a> {
         });
         let mut out_pq = PrioContainerMax::new(self.options.limit);
         out_pq.extend(out);
-        out_pq.into_iter().collect()
+        out_pq.into_iter().map(|i| i.0).collect()
     }
 
     #[inline]

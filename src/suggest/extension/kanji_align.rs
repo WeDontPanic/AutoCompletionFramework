@@ -38,7 +38,7 @@ impl<'a> Extension<'a> for KanjiAlignExtension<'a> {
             out.insert(item);
         }
 
-        let out = out.into_iter().collect::<Vec<_>>();
+        let out = out.into_iter().map(|i|i.0).collect::<Vec<_>>();
         let rel_calc = RelevanceCalc::new(self.options.weights).with_total_weight(rel_weight);
         query.order_items(out, rel_calc)
     }

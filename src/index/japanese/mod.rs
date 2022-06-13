@@ -111,7 +111,7 @@ impl SuggestionIndex for JapaneseIndex {
         // PrioContainer only yields `limit` items
         prio_container
             .into_iter()
-            .map(|i| i.into_inner().into_engine_item())
+            .map(|i| i.0.into_inner().into_engine_item())
             .collect()
     }
 

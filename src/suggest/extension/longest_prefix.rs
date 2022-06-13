@@ -85,7 +85,7 @@ impl<'a> Extension<'a> for LongestPrefixExtension<'a> {
 
         let mut queue = PrioContainerMax::new(self.options.limit);
         queue.extend(ordered);
-        queue.into_iter().collect::<Vec<_>>()
+        queue.into_iter().map(|i| i.0).collect::<Vec<_>>()
     }
 
     #[inline]

@@ -261,7 +261,7 @@ source = "git+https://github.com/JojiiOfficial/jp_utils#74145f23f8baaae91dba0ee4
 [[package]]
 name = "jpeudex"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/jpeudex#037be62d40a46d3923f722ae7248ceaecc6f5cb2"
+source = "git+https://github.com/JojiiOfficial/jpeudex#a74da7ee698f02b1ee0e03b2b4de1d30c348f6d2"
 dependencies = [
  "jp_utils",
  "serde",
@@ -381,7 +381,9 @@ dependencies = [
 
 [[package]]
 name = "priority_container"
-version = "0.1.0"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c4886bb938a91e70d3a84efa590f753cf52076149f5963de5727085435f5cbcb"
 
 [[package]]
 name = "proc-macro2"
