@@ -11,8 +11,7 @@ rayon = "1.5.3"
 serde = { version = "1.0.137", features = ["derive"] }
 qp-trie = {git = "https://github.com/sdleffler/qp-trie-rs", features = ["serde"]}
 strsim = "0.10.0"
-#priority_container = "0.1.0"
-priority_container = { path = "../priority_container"}
+priority_container = "0.1.0"
 jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex"}
 order_struct = {git = "https://github.com/JojiiOfficial/OrderStruct"}
 eudex = { git = "https://github.com/WeDontPanic/eudex"}
