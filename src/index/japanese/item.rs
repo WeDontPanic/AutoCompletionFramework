@@ -70,6 +70,7 @@ impl super::super::IndexItem for Item {
                 return (strsim::normalized_levenshtein(&word, &query) * 1000.0) as u16;
             }
         }
+
         let kana_sim = freq(&self.kana, query);
         let kanji_sim = self
             .kanji

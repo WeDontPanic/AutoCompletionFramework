@@ -261,7 +261,7 @@ source = "git+https://github.com/JojiiOfficial/jp_utils#74145f23f8baaae91dba0ee4
 [[package]]
 name = "jpeudex"
 version = "0.1.1"
-source = "git+https://github.com/JojiiOfficial/jpeudex#a74da7ee698f02b1ee0e03b2b4de1d30c348f6d2"
+source = "git+https://github.com/JojiiOfficial/jpeudex#688fa2c169fc61dbeb3f978bcfd90b2099596bcb"
 dependencies = [
  "jp_utils",
  "serde",
