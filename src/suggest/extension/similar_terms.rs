@@ -39,7 +39,7 @@ impl<'a> Extension<'a> for SimilarTermsExtension<'a> {
 
         let out = FastStringDist::new(similar, &query.query_str).assign_mut(|item, query| {
             let str_rel =
-                (item.inner().str_relevance(query) + 100).saturating_sub(item.get_relevance() * 50);
+                (item.inner().str_relevance(query) + 100).saturating_sub(item.get_relevance());
             item.set_relevance(rel_calc.calc(item, str_rel));
         });
         let mut out_pq = PrioContainerMax::new(self.options.limit);

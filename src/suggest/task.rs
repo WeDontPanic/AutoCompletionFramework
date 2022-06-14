@@ -75,6 +75,9 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
             for i in query_res.into_iter().filter(|i| self.item_allowed(i)) {
                 let i = self.apply_rel_mod(i);
                 out.insert(OrderVal::new(i.to_output(), i.get_relevance()));
+                if self.debug {
+                    println!("{:?}: {}", i.to_output(), i.get_relevance());
+                }
             }
         }
 
@@ -83,7 +86,12 @@ impl<'index, 'a, 'ext> SuggestionTask<'index, 'a, 'ext> {
             .iter()
             .filter(|i| self.item_allowed(i))
             .map(|i| self.apply_rel_mod(*i))
-            .map(|i| OrderVal::new(i.to_output(), i.get_relevance()));
+            .map(|i| OrderVal::new(i.to_output(), i.get_relevance()))
+            .inspect(|i| {
+                if self.debug {
+                    println!("{:?}: {}", i.inner(), i.ord());
+                }
+            });
         out.extend(cust_add);
 
         let mut out = out.into_iter().map(|i| i.into_inner()).collect::<Vec<_>>();

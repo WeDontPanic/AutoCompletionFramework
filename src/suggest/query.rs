@@ -1,4 +1,4 @@
-use priority_container::{UniquePrioContainerMax};
+use priority_container::UniquePrioContainerMax;
 
 use crate::{
     fast_str_diff::FastStringDist,
