@@ -15,6 +15,7 @@ qp-trie = { git = "https://github.com/sdleffler/qp-trie-rs", features = [
 strsim = "0.10.0"
 priority_container = "0.1.1"
 jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex" }
+#jpeudex = { path = "../jpeudex" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 eudex = { git = "https://github.com/WeDontPanic/eudex" }
 

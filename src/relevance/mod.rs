@@ -62,6 +62,6 @@ impl RelevanceCalc {
             frel = 1.0;
         }
         let calc = (srel + frel + 1.0) * self.weights.total_weight;
-        calc as u16
+        (calc * 10.0) as u16
     }
 }
