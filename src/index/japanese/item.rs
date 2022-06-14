@@ -59,26 +59,37 @@ impl super::super::IndexItem for Item {
 
     #[inline]
     fn str_relevance(&self, query: &str) -> u16 {
-        fn freq(word: &str, query: &str) -> u16 {
+        fn freq(word: &str, query: &str) -> (u16, bool) {
             if word.starts_with(&query) {
                 let query_len: usize = query.chars().count();
                 let word_len: usize = word.chars().count();
 
                 let normalized = (1.0 - (query_len as f32 / word_len as f32)) * 1000.0;
-                return (1000.0 - normalized) as u16;
+                let sim = (1000.0 - normalized) as u16;
+                (sim, true)
             } else {
-                return (strsim::normalized_levenshtein(&word, &query) * 1000.0) as u16;
+                let sim = (strsim::normalized_levenshtein(&word, &query) * 1000.0) as u16;
+                (sim, false)
             }
         }
 
-        let kana_sim = freq(&self.kana, query);
-        let kanji_sim = self
+        let (kanji_sc, kanji_sw) = self
             .kanji
             .as_ref()
             .map(|i| freq(i, query))
-            .max(self.alternative.iter().map(|i| freq(i, query)).max())
-            .unwrap_or(0);
-        kana_sim.max(kanji_sim)
+            .unwrap_or((0, false));
+
+        let (kana_sc, kana_sw) = freq(&self.kana, query);
+        if kana_sw || kanji_sw {
+            return kana_sc.max(kanji_sc) + 10;
+        }
+
+        self.alternative
+            .iter()
+            .map(|r| freq(r, query).0)
+            .max()
+            .unwrap_or(0)
+            .saturating_sub(300)
     }
 
     #[inline]
