@@ -19,6 +19,7 @@ jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 eudex = { git = "https://github.com/WeDontPanic/eudex" }
 vector_space_model2 = { path = "../VectorSpaceModel" }
+ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools" }
 
 [dev-dependencies]
 criterion = "0.3.5"

@@ -1,10 +1,8 @@
 pub mod builder;
-pub mod iter;
 
+use ngram_tools::iter::wordgrams::Wordgrams;
 use serde::{Deserialize, Serialize};
 use vector_space_model2::{index::Index, traits::Decodable, DefaultMetadata, Vector};
-
-use self::iter::NgramIter;
 
 #[derive(Deserialize, Serialize)]
 pub struct NGIndex<I: Decodable> {
@@ -19,7 +17,7 @@ impl<I: Decodable> NGIndex<I> {
 
     pub fn query_vec(&self, query: &str) -> Option<Vector> {
         let padded_query = padded(query, self.n - 1);
-        let terms: Vec<_> = NgramIter::new(&padded_query, self.n).collect();
+        let terms: Vec<_> = Wordgrams::new(&padded_query, self.n).collect();
         self.build_vec(&terms)
     }
 
