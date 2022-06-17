@@ -1,6 +1,7 @@
 pub mod custom;
 pub mod kanji_align;
 pub mod longest_prefix;
+pub mod ngram;
 pub mod similar_terms;
 
 use super::query::SuggestionQuery;

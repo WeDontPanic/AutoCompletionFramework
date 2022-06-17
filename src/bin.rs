@@ -14,12 +14,13 @@ use autocompletion::{
         basic::{basic_format, BasicIndex},
         japanese::JapaneseIndex,
         str_item::StringItem,
-        IndexItem, KanjiReadingAlign, SuggestionIndex,
+        IndexItem, KanjiReadingAlign, NGIndexable, SuggestionIndex,
     },
     suggest::{
         extension::{
             custom::CustomExtension, kanji_align::KanjiAlignExtension,
-            longest_prefix::LongestPrefixExtension, similar_terms::SimilarTermsExtension,
+            longest_prefix::LongestPrefixExtension, ngram::NGramExtension,
+            similar_terms::SimilarTermsExtension,
         },
         query::SuggestionQuery,
         task::SuggestionTask,
@@ -27,11 +28,11 @@ use autocompletion::{
 };
 
 pub fn main() {
-    //let index = load_jp();
+    /* let index = load_jp();
     let index: JapaneseIndex =
-        bincode::deserialize_from(BufReader::new(File::open("./kanji_meanings").unwrap())).unwrap();
-    //let index = build();
-    //bincode::serialize_into(BufWriter::new(File::create("index").unwrap()), &index).unwrap();
+        bincode::deserialize_from(BufReader::new(File::open("./kanji_meanings").unwrap())).unwrap(); */
+    let index = build();
+    bincode::serialize_into(BufWriter::new(File::create("index").unwrap()), &index).unwrap();
 
     println!("Index loaded ({})", index.len());
 
@@ -46,7 +47,7 @@ pub fn main() {
     }
 }
 
-fn search<T: SuggestionIndex + 'static>(engine: &T, query: &str) {
+fn search<T: SuggestionIndex + NGIndexable + 'static>(engine: &T, query: &str) {
     let query = query.to_lowercase();
     let start = Instant::now();
     let mut task = SuggestionTask::new(30).debug();
@@ -76,6 +77,10 @@ fn search<T: SuggestionIndex + 'static>(engine: &T, query: &str) {
     query.add_extension(ste);
     */
 
+    let mut ngext = NGramExtension::new(engine);
+    //ngext.options.weights.total_weight = 0.8;
+    query.add_extension(ngext);
+
     task.add_query(query);
     let completions = task.search();
     let end = start.elapsed();
@@ -97,7 +102,8 @@ pub fn build() -> BasicIndex {
         })
         .collect::<Vec<_>>();
 
-    BasicIndex::new(items, basic_format)
+    // BasicIndex::new(items, basic_format)
+    BasicIndex::with_ngindex(items, basic_format, 3)
 }
 
 fn load_freq_list() -> HashMap<String, f64> {
@@ -127,8 +133,8 @@ fn load_freq_list() -> HashMap<String, f64> {
 fn all_docs() -> Vec<String> {
     let mut terms = vec![];
 
-    //let file = File::open("./de-DE").unwrap();
-    let file = File::open("./en-US").unwrap();
+    let file = File::open("./de-DE").unwrap();
+    //let file = File::open("./en-US").unwrap();
     let reader = BufReader::new(file);
 
     for line in reader.lines() {

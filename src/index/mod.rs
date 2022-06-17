@@ -1,5 +1,6 @@
 pub mod basic;
 pub mod japanese;
+pub mod ngram_ext;
 pub mod output;
 pub mod str_item;
 
@@ -43,4 +44,8 @@ pub trait SuggestionIndex {
 
 pub trait KanjiReadingAlign {
     fn align_reading(&self, query: &str) -> Vec<EngineItem>;
+}
+
+pub trait NGIndexable {
+    fn similar(&self, query: &str, limit: usize) -> Vec<EngineItem>;
 }

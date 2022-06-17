@@ -1,9 +1,12 @@
 pub mod item;
 
 pub use item::Item;
-use order_struct::{float_ord::FloatOrd, OrderBy};
+use order_struct::{float_ord::FloatOrd, order_nh::OrderVal, OrderBy};
 
-use super::{IndexItem, SuggestionIndex};
+use super::{
+    ngram_ext::{builder::NGIndexBuilder, NGIndex},
+    IndexItem, NGIndexable, SuggestionIndex,
+};
 use crate::relevance::item::EngineItem;
 use priority_container::{PrioContainer, PrioContainerMax};
 use qp_trie::{wrapper::BString, Trie};
@@ -17,22 +20,55 @@ pub struct BasicIndex {
     trie: Trie<BString, u32>,
     /// All Words, with the vector position as ID and frequency data
     terms: Vec<Item>,
+
+    ngram: Option<NGIndex>,
 }
 
 impl BasicIndex {
     /// Create a new index
-    pub fn new<F>(items: Vec<Item>, format: F) -> Self
+    pub fn with_ngindex<F>(terms: Vec<Item>, format: F, n: usize) -> Self
     where
         F: Fn(&str) -> String,
     {
         let mut trie = Trie::new();
 
-        for (pos, item) in items.iter().enumerate() {
+        let mut ngram_builder = NGIndexBuilder::new(n);
+
+        for (pos, item) in terms.iter().enumerate() {
+            let formatted = format(&item.word()).to_lowercase();
+            trie.insert_str(&formatted, pos as u32);
+
+            if !formatted.contains(' ') && formatted.chars().count() <= 15 {
+                ngram_builder.insert(&formatted, pos as u32);
+            }
+        }
+
+        let ngram = ngram_builder.build();
+
+        Self {
+            trie,
+            terms,
+            ngram: Some(ngram),
+        }
+    }
+
+    /// Create a new index
+    pub fn new<F>(terms: Vec<Item>, format: F) -> Self
+    where
+        F: Fn(&str) -> String,
+    {
+        let mut trie = Trie::new();
+
+        for (pos, item) in terms.iter().enumerate() {
             let formatted = format(&item.word()).to_lowercase();
             trie.insert_str(&formatted, pos as u32);
         }
 
-        Self { trie, terms: items }
+        Self {
+            trie,
+            terms,
+            ngram: None,
+        }
     }
 
     /// Inserts a new item into the Index
@@ -122,6 +158,35 @@ impl SuggestionIndex for BasicIndex {
     #[inline]
     fn len(&self) -> usize {
         self.terms.len()
+    }
+}
+
+impl NGIndexable for BasicIndex {
+    fn similar(&self, query: &str, limit: usize) -> Vec<EngineItem> {
+        if self.ngram.is_none() {
+            return vec![];
+        }
+
+        let ngram = self.ngram.as_ref().unwrap();
+
+        let q_vec = match ngram.query_vec(query) {
+            Some(q) => q,
+            None => return vec![],
+        };
+
+        let mut prio_queue = PrioContainerMax::new(limit);
+
+        let res_iter = ngram
+            .find(&q_vec)
+            .map(|(id, sim)| OrderVal::new(id, FloatOrd(sim)));
+        prio_queue.extend(res_iter);
+
+        let mut out: Vec<_> = prio_queue
+            .into_iter()
+            .map(|i| EngineItem::new(self.get_item(*i.0.inner()), (i.0.ord().0 * 1000.0) as u16))
+            .collect();
+        out.reverse();
+        out
     }
 }
 
