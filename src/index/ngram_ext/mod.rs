@@ -2,18 +2,18 @@ pub mod builder;
 pub mod iter;
 
 use serde::{Deserialize, Serialize};
-use vector_space_model2::{index::Index, DefaultMetadata, Vector};
+use vector_space_model2::{index::Index, traits::Decodable, DefaultMetadata, Vector};
 
 use self::iter::NgramIter;
 
 #[derive(Deserialize, Serialize)]
-pub struct NGIndex {
-    index: Index<u32, DefaultMetadata>,
+pub struct NGIndex<I: Decodable> {
+    pub(crate) index: Index<I, DefaultMetadata>,
     n: usize,
 }
 
-impl NGIndex {
-    pub fn new(index: Index<u32, DefaultMetadata>, n: usize) -> Self {
+impl<I: Decodable> NGIndex<I> {
+    pub fn new(index: Index<I, DefaultMetadata>, n: usize) -> Self {
         Self { index, n }
     }
 
@@ -41,7 +41,7 @@ impl NGIndex {
             .collect()
     }
 
-    pub fn find<'a>(&'a self, query: &'a Vector) -> impl Iterator<Item = (u32, f32)> + 'a {
+    pub fn find<'a>(&'a self, query: &'a Vector) -> impl Iterator<Item = (I, f32)> + 'a {
         let dims = self.light_vec_dims(query);
         self.index.get_vector_store().get_all_iter(&dims).map(|i| {
             let sim = dice(i.vector(), query);

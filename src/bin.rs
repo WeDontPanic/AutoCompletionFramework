@@ -13,6 +13,7 @@ use autocompletion::{
         self,
         basic::{basic_format, BasicIndex},
         japanese::JapaneseIndex,
+        ngram::{builder::NgramIndexBuilder, NgramIndex},
         str_item::StringItem,
         IndexItem, KanjiReadingAlign, NGIndexable, SuggestionIndex,
     },
@@ -33,6 +34,10 @@ pub fn main() {
         bincode::deserialize_from(BufReader::new(File::open("./kanji_meanings").unwrap())).unwrap(); */
     let index = build();
     bincode::serialize_into(BufWriter::new(File::create("index").unwrap()), &index).unwrap();
+    /*
+    let index = build_ng();
+    bincode::serialize_into(BufWriter::new(File::create("index").unwrap()), &index).unwrap();
+    */
 
     println!("Index loaded ({})", index.len());
 
@@ -88,6 +93,23 @@ fn search<T: SuggestionIndex + NGIndexable + 'static>(engine: &T, query: &str) {
     println!("{:#?}", completions);
     println!("{:#?}", end);
     println!("aaa");
+}
+
+pub fn build_ng() -> NgramIndex {
+    let terms = all_docs();
+    let freq_data = load_freq_list();
+
+    let mut builder = NgramIndexBuilder::new(3);
+
+    for term in terms {
+        let freq = freq_data.get(&term).unwrap_or(&0.0);
+        let term_fmt = basic_format(&term);
+        let item = index::ngram::Item::new(term, 0, *freq);
+
+        builder.insert(&[term_fmt], item);
+    }
+
+    builder.build()
 }
 
 pub fn build() -> BasicIndex {

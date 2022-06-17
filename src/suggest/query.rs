@@ -67,7 +67,10 @@ impl<'index, 'ext> SuggestionQuery<'index, 'ext> {
         rel_calc: RelevanceCalc,
     ) -> Vec<EngineItem<'a>> {
         FastStringDist::new(inp, &self.query_str).assign_mut(|item, query| {
-            let str_rel = item.inner().str_relevance(query);
+            let mut str_rel = item.get_relevance();
+            if str_rel == 0 {
+                str_rel = item.inner().str_relevance(query);
+            }
             item.set_relevance(rel_calc.calc(item, str_rel));
         })
     }

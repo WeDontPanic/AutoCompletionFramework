@@ -1,5 +1,6 @@
 pub mod basic;
 pub mod japanese;
+pub mod ngram;
 pub mod ngram_ext;
 pub mod output;
 pub mod str_item;
@@ -27,10 +28,12 @@ pub trait SuggestionIndex {
     fn exact(&self, inp: &str) -> Vec<EngineItem>;
     fn get_word(&self, id: u32) -> Option<EngineItem>;
 
+    /*
     #[inline]
     fn str_relevance(&self, id: u32, query: &str) -> u16 {
         self.get_word(id).unwrap().inner().str_relevance(query)
     }
+    */
 
     #[inline]
     fn similar_terms(&self, _inp: &str, _limit: usize, _max_dist: u32) -> Vec<EngineItem> {

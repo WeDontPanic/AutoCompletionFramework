@@ -21,7 +21,7 @@ pub struct BasicIndex {
     /// All Words, with the vector position as ID and frequency data
     terms: Vec<Item>,
 
-    ngram: Option<NGIndex>,
+    ngram: Option<NGIndex<u32>>,
 }
 
 impl BasicIndex {
@@ -32,7 +32,7 @@ impl BasicIndex {
     {
         let mut trie = Trie::new();
 
-        let mut ngram_builder = NGIndexBuilder::new(n);
+        let mut ngram_builder = NGIndexBuilder::<u32>::new(n);
 
         for (pos, item) in terms.iter().enumerate() {
             let formatted = format(&item.word()).to_lowercase();
