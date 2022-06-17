@@ -33,6 +33,10 @@ impl NgramIndex {
     fn build_query(&self, s: &str) -> Option<Vector> {
         self.index.query_vec(s)
     }
+
+    pub fn n(&self) -> usize {
+        self.n
+    }
 }
 
 impl SuggestionIndex for NgramIndex {

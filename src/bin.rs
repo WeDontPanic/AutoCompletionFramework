@@ -11,7 +11,7 @@ use std::{
 use autocompletion::{
     index::{
         self,
-        basic::{basic_format, BasicIndex},
+        basic::{basic_format, builder::BasicIndexBuilder, BasicIndex},
         japanese::JapaneseIndex,
         ngram::{builder::NgramIndexBuilder, NgramIndex},
         str_item::StringItem,
@@ -116,16 +116,16 @@ pub fn build() -> BasicIndex {
     let terms = all_docs();
     let freq_data = load_freq_list();
 
-    let items = terms
-        .into_iter()
-        .map(|i| {
-            let freq = freq_data.get(&i).unwrap_or(&0.0);
-            index::basic::Item::new(i, 0, *freq)
-        })
-        .collect::<Vec<_>>();
+    let mut builder = BasicIndexBuilder::new();
 
-    // BasicIndex::new(items, basic_format)
-    BasicIndex::with_ngindex(items, basic_format, 3)
+    for term in terms {
+        let freq = freq_data.get(&term).unwrap_or(&0.0);
+        let formatted = basic_format(&term);
+        let item = index::basic::Item::new(term, 0, *freq);
+        builder.insert(item, &formatted);
+    }
+
+    builder.build()
 }
 
 fn load_freq_list() -> HashMap<String, f64> {

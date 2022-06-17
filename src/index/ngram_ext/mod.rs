@@ -53,6 +53,11 @@ impl<I: Decodable> NGIndex<I> {
     }
 
     #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.index.is_empty()
+    }
+
+    #[inline]
     fn build_vec<S: AsRef<str>>(&self, terms: &[S]) -> Option<Vector> {
         Some(self.index.build_vector(terms, None)?)
     }
@@ -68,6 +73,15 @@ impl<I: Decodable> NGIndex<I> {
                     < 1000
             })
             .collect()
+    }
+}
+
+impl<D: Decodable> Default for NGIndex<D> {
+    fn default() -> Self {
+        Self {
+            index: Default::default(),
+            n: Default::default(),
+        }
     }
 }
 

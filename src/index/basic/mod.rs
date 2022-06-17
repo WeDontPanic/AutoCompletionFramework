@@ -1,12 +1,10 @@
+pub mod builder;
 pub mod item;
 
 pub use item::Item;
 use order_struct::{float_ord::FloatOrd, order_nh::OrderVal, OrderBy};
 
-use super::{
-    ngram_ext::{builder::NGIndexBuilder, NGIndex},
-    IndexItem, NGIndexable, SuggestionIndex,
-};
+use super::{ngram_ext::NGIndex, IndexItem, NGIndexable, SuggestionIndex};
 use crate::relevance::item::EngineItem;
 use priority_container::{PrioContainer, PrioContainerMax};
 use qp_trie::{wrapper::BString, Trie};
@@ -21,66 +19,10 @@ pub struct BasicIndex {
     /// All Words, with the vector position as ID and frequency data
     terms: Vec<Item>,
 
-    ngram: Option<NGIndex<u32>>,
+    ngram: NGIndex<u32>,
 }
 
 impl BasicIndex {
-    /// Create a new index
-    pub fn with_ngindex<F>(terms: Vec<Item>, format: F, n: usize) -> Self
-    where
-        F: Fn(&str) -> String,
-    {
-        let mut trie = Trie::new();
-
-        let mut ngram_builder = NGIndexBuilder::<u32>::new(n);
-
-        for (pos, item) in terms.iter().enumerate() {
-            let formatted = format(&item.word()).to_lowercase();
-            trie.insert_str(&formatted, pos as u32);
-
-            if !formatted.contains(' ') && formatted.chars().count() <= 15 {
-                ngram_builder.insert(&formatted, pos as u32);
-            }
-        }
-
-        let ngram = ngram_builder.build();
-
-        Self {
-            trie,
-            terms,
-            ngram: Some(ngram),
-        }
-    }
-
-    /// Create a new index
-    pub fn new<F>(terms: Vec<Item>, format: F) -> Self
-    where
-        F: Fn(&str) -> String,
-    {
-        let mut trie = Trie::new();
-
-        for (pos, item) in terms.iter().enumerate() {
-            let formatted = format(&item.word()).to_lowercase();
-            trie.insert_str(&formatted, pos as u32);
-        }
-
-        Self {
-            trie,
-            terms,
-            ngram: None,
-        }
-    }
-
-    /// Inserts a new item into the Index
-    pub fn insert<F>(&mut self, item: Item, format: F)
-    where
-        F: Fn(&str) -> String,
-    {
-        let formatted = format(&item.word()).to_lowercase();
-        self.trie.insert_str(&formatted, self.terms.len() as u32);
-        self.terms.push(item);
-    }
-
     /// Returns a raw Item
     #[inline]
     fn get_item(&self, id: u32) -> &Item {
@@ -163,20 +105,15 @@ impl SuggestionIndex for BasicIndex {
 
 impl NGIndexable for BasicIndex {
     fn similar(&self, query: &str, limit: usize) -> Vec<EngineItem> {
-        if self.ngram.is_none() {
-            return vec![];
-        }
-
-        let ngram = self.ngram.as_ref().unwrap();
-
-        let q_vec = match ngram.query_vec(query) {
+        let q_vec = match self.ngram.query_vec(query) {
             Some(q) => q,
             None => return vec![],
         };
 
         let mut prio_queue = PrioContainerMax::new(limit);
 
-        let res_iter = ngram
+        let res_iter = self
+            .ngram
             .find_qweight(&q_vec, 0.64)
             .map(|(id, sim)| OrderVal::new(id, FloatOrd(sim)));
         prio_queue.extend(res_iter);

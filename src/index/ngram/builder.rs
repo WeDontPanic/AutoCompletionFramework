@@ -41,4 +41,8 @@ impl NgramIndexBuilder {
             n: self.n,
         }
     }
+
+    pub fn n(&self) -> usize {
+        self.n
+    }
 }
