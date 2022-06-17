@@ -177,7 +177,7 @@ impl NGIndexable for BasicIndex {
         let mut prio_queue = PrioContainerMax::new(limit);
 
         let res_iter = ngram
-            .find(&q_vec)
+            .find_qweight(&q_vec, 0.64)
             .map(|(id, sim)| OrderVal::new(id, FloatOrd(sim)));
         prio_queue.extend(res_iter);
 
