@@ -105,7 +105,13 @@ impl SuggestionIndex for BasicIndex {
 }
 
 impl NGIndexable for BasicIndex {
-    fn similar(&self, query: &str, limit: usize) -> Vec<EngineItem> {
+    fn similar(
+        &self,
+        query: &str,
+        limit: usize,
+        q_weight: f32,
+        term_limit: usize,
+    ) -> Vec<EngineItem> {
         let q_vec = match self.ngram.make_query_vec(query) {
             Some(q) => q,
             None => return vec![],
@@ -115,7 +121,7 @@ impl NGIndexable for BasicIndex {
 
         let res_iter = self
             .ngram
-            .find_qweight(&q_vec, 0.64)
+            .find_qweight_fast(&q_vec, q_weight, term_limit)
             .map(|(id, sim)| OrderVal::new(id, FloatOrd(sim)));
         prio_queue.extend(res_iter);
 

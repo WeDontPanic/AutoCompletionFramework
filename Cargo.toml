@@ -15,12 +15,11 @@ qp-trie = { git = "https://github.com/sdleffler/qp-trie-rs", features = [
 strsim = "0.10.0"
 priority_container = "0.1.1"
 jpeudex = { git = "https://github.com/JojiiOfficial/jpeudex" }
-#jpeudex = { path = "../jpeudex" }
 order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 eudex = { git = "https://github.com/WeDontPanic/eudex" }
-vector_space_model2 = { path = "../VectorSpaceModel" }
 ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools" }
-ngindex = { path = "../ngindex" }
+ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
+romaji = "*"
 
 [dev-dependencies]
 criterion = "0.3.5"

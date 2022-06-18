@@ -2,13 +2,12 @@ pub mod builder;
 pub mod item;
 
 pub use item::Item;
-use ngindex::NGIndex;
+use ngindex::{NGIndex, Vector};
 
 use super::{IndexItem, SuggestionIndex};
 use crate::relevance::item::EngineItem;
 use priority_container::PrioContainerMax;
 use serde::{Deserialize, Serialize};
-use vector_space_model2::Vector;
 
 /// Index with basic suggestion functionality
 #[derive(Serialize, Deserialize)]

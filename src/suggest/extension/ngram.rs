@@ -11,6 +11,8 @@ use super::{Extension, ExtensionOptions};
 pub struct NGramExtension<'a> {
     pub options: ExtensionOptions,
     pub sim_threshold: u16,
+    pub query_weigth: f32,
+    pub term_limit: usize,
     index: &'a dyn NGIndexable,
 }
 
@@ -26,6 +28,8 @@ impl<'a> NGramExtension<'a> {
             options,
             index,
             sim_threshold: (sim_threshold * 1000.0) as u16,
+            query_weigth: 0.6,
+            term_limit: 2000,
         }
     }
 }
@@ -38,7 +42,12 @@ impl<'a> Extension<'a> for NGramExtension<'a> {
 
         let rel_calc = RelevanceCalc::new(self.options.weights).with_total_weight(rel_weight);
 
-        for mut item in self.index.similar(&query.query_str, self.options.limit) {
+        for mut item in self.index.similar(
+            &query.query_str,
+            self.options.limit,
+            self.query_weigth,
+            self.term_limit,
+        ) {
             // use previously assigned value form ngam index as string relevance
             let str_rel = item.get_relevance();
             if str_rel < self.sim_threshold {

@@ -45,5 +45,11 @@ pub trait KanjiReadingAlign {
 }
 
 pub trait NGIndexable {
-    fn similar(&self, query: &str, limit: usize) -> Vec<EngineItem>;
+    fn similar(
+        &self,
+        query: &str,
+        limit: usize,
+        q_weight: f32,
+        term_limit: usize,
+    ) -> Vec<EngineItem>;
 }

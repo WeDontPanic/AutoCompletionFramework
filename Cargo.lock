@@ -39,9 +39,9 @@ dependencies = [
  "priority_container",
  "qp-trie",
  "rayon",
+ "romaji",
  "serde",
  "strsim",
- "vector_space_model2",
 ]
 
 [[package]]
@@ -436,6 +436,7 @@ checksum = "e4a24736216ec316047a1fc4252e27dabb04218aa4a3f37c6e7ddbf1f9782b54"
 [[package]]
 name = "ngindex"
 version = "0.1.0"
+source = "git+https://github.com/JojiiOfficial/ngindex#75df023917ef5221b0ad6863334e9159f96d4220"
 dependencies = [
  "ngram-tools",
  "serde",
@@ -603,6 +604,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49b3de9ec5dc0a3417da371aab17d729997c15010e7fd24ff707773a33bddb64"
 
 [[package]]
+name = "romaji"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8a904298315f5fe2693cefe406da0c00c2056c43bc7d70920a1e979ffb526f9"
+
+[[package]]
 name = "rustc_version"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -755,6 +762,7 @@ source = "git+https://github.com/JojiiOfficial/utilsrs#b0b019f328216bae7ad55faba
 [[package]]
 name = "vector_space_model2"
 version = "0.1.1"
+source = "git+https://github.com/JojiiOfficial/VectorSpaceModel#4dd876837e607017bff1176685f79b33703d3122"
 dependencies = [
  "bincode",
  "byteorder",

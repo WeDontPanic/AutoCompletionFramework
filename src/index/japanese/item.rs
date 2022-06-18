@@ -1,3 +1,4 @@
+use romaji::RomajiExt;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -59,7 +60,9 @@ impl super::super::IndexItem for Item {
 
     #[inline]
     fn str_relevance(&self, query: &str) -> u16 {
+        let query = query.to_hiragana();
         fn freq(word: &str, query: &str) -> (u16, bool) {
+            let word = word.to_hiragana();
             if word.starts_with(&query) {
                 let query_len: usize = query.chars().count();
                 let word_len: usize = word.chars().count();
@@ -76,17 +79,17 @@ impl super::super::IndexItem for Item {
         let (kanji_sc, kanji_sw) = self
             .kanji
             .as_ref()
-            .map(|i| freq(i, query))
+            .map(|i| freq(i, &query))
             .unwrap_or((0, false));
 
-        let (kana_sc, kana_sw) = freq(&self.kana, query);
+        let (kana_sc, kana_sw) = freq(&self.kana, &query);
         if kana_sw || kanji_sw {
             return kana_sc.max(kanji_sc) + 10;
         }
 
         self.alternative
             .iter()
-            .map(|r| freq(r, query).0)
+            .map(|r| freq(r, &query).0)
             .max()
             .unwrap_or(0)
             .saturating_sub(300)
