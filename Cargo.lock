@@ -33,6 +33,7 @@ dependencies = [
  "criterion",
  "eudex",
  "jpeudex",
+ "ngindex",
  "ngram-tools",
  "order_struct",
  "priority_container",
@@ -431,6 +432,15 @@ name = "new_debug_unreachable"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e4a24736216ec316047a1fc4252e27dabb04218aa4a3f37c6e7ddbf1f9782b54"
+
+[[package]]
+name = "ngindex"
+version = "0.1.0"
+dependencies = [
+ "ngram-tools",
+ "serde",
+ "vector_space_model2",
+]
 
 [[package]]
 name = "ngram-tools"

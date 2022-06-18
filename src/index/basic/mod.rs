@@ -2,9 +2,10 @@ pub mod builder;
 pub mod item;
 
 pub use item::Item;
+use ngindex::NGIndex;
 use order_struct::{float_ord::FloatOrd, order_nh::OrderVal, OrderBy};
 
-use super::{ngram_ext::NGIndex, IndexItem, NGIndexable, SuggestionIndex};
+use super::{IndexItem, NGIndexable, SuggestionIndex};
 use crate::relevance::item::EngineItem;
 use priority_container::{PrioContainer, PrioContainerMax};
 use qp_trie::{wrapper::BString, Trie};
@@ -105,7 +106,7 @@ impl SuggestionIndex for BasicIndex {
 
 impl NGIndexable for BasicIndex {
     fn similar(&self, query: &str, limit: usize) -> Vec<EngineItem> {
-        let q_vec = match self.ngram.query_vec(query) {
+        let q_vec = match self.ngram.make_query_vec(query) {
             Some(q) => q,
             None => return vec![],
         };

@@ -1,8 +1,6 @@
-use qp_trie::{wrapper::BString, Trie};
-
-use crate::index::ngram_ext::builder::NGIndexBuilder;
-
 use super::{BasicIndex, Item};
+use ngindex::builder::NGIndexBuilder;
+use qp_trie::{wrapper::BString, Trie};
 
 pub struct BasicIndexBuilder {
     build_ng_index: bool,

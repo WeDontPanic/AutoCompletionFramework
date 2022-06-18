@@ -2,8 +2,9 @@ pub mod builder;
 pub mod item;
 
 pub use item::Item;
+use ngindex::NGIndex;
 
-use super::{ngram_ext::NGIndex, IndexItem, SuggestionIndex};
+use super::{IndexItem, SuggestionIndex};
 use crate::relevance::item::EngineItem;
 use priority_container::PrioContainerMax;
 use serde::{Deserialize, Serialize};
@@ -31,7 +32,7 @@ impl NgramIndex {
 
     #[inline]
     fn build_query(&self, s: &str) -> Option<Vector> {
-        self.index.query_vec(s)
+        self.index.make_query_vec(s)
     }
 
     pub fn n(&self) -> usize {

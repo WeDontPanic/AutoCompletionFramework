@@ -1,3 +1,5 @@
+use ngindex::builder::NGIndexBuilder;
+
 use super::item::Item;
 use super::NgramIndex;
 use std::collections::HashMap;
@@ -28,7 +30,7 @@ impl NgramIndexBuilder {
     }
 
     pub fn build(self) -> NgramIndex {
-        let mut builder = super::super::ngram_ext::builder::NGIndexBuilder::<Vec<u32>>::new(self.n);
+        let mut builder = NGIndexBuilder::<Vec<u32>>::new(self.n);
 
         for (term, out) in self.index_str {
             let out: Vec<_> = out.into_iter().map(|i| i as u32).collect();

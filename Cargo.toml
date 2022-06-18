@@ -20,6 +20,7 @@ order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 eudex = { git = "https://github.com/WeDontPanic/eudex" }
 vector_space_model2 = { path = "../VectorSpaceModel" }
 ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools" }
+ngindex = { path = "../ngindex" }
 
 [dev-dependencies]
 criterion = "0.3.5"

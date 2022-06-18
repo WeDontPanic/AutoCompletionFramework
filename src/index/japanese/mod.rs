@@ -1,11 +1,13 @@
+pub mod builder;
 pub mod item;
 
 pub use item::Item;
+use ngindex::NGIndex;
 use serde::{Deserialize, Serialize};
 
-use super::{IndexItem, KanjiReadingAlign, SuggestionIndex};
+use super::{IndexItem, KanjiReadingAlign, NGIndexable, SuggestionIndex};
 use crate::relevance::item::EngineItem;
-use order_struct::{float_ord::FloatOrd, OrderBy};
+use order_struct::{float_ord::FloatOrd, order_nh::OrderVal, OrderBy};
 use priority_container::{PrioContainer, PrioContainerMax};
 use qp_trie::{wrapper::BString, Trie};
 use std::collections::HashSet;
@@ -16,72 +18,11 @@ pub struct JapaneseIndex {
     pub trie: Trie<BString, Vec<u32>>,
     pub items: Vec<Item>,
     kanji_align: Trie<BString, Vec<u32>>,
-}
 
-pub struct InsertItem {
-    item: Item,
-    kanji_aligns: Vec<String>,
-    normal_kana: Option<String>,
-}
-
-impl InsertItem {
-    #[inline]
-    pub fn new(item: Item, kanji_aligns: Vec<String>) -> Self {
-        Self {
-            item,
-            kanji_aligns,
-            normal_kana: None,
-        }
-    }
-
-    /// Set the insert item's normal kana.
-    #[inline]
-    pub fn set_normal_kana(&mut self, normal_kana: Option<String>) {
-        self.normal_kana = normal_kana;
-    }
+    ngindex: NGIndex<Vec<u32>>,
 }
 
 impl JapaneseIndex {
-    /// Build a new JapaneseIndex
-    pub fn new(items: Vec<InsertItem>) -> Self {
-        let mut trie = Trie::new();
-        let mut kanji_align = Trie::new();
-
-        let mut index_item = Vec::with_capacity(items.len());
-
-        for (pos, iitem) in items.iter().enumerate() {
-            let id = pos as u32;
-            let kanji_aligns = &iitem.kanji_aligns;
-            let item = iitem.item.clone();
-
-            insert_or_update(&mut trie, &item.kana, id);
-
-            if let Some(ref kanji) = item.kanji {
-                insert_or_update(&mut trie, kanji, id);
-            }
-
-            for alt in &item.alternative {
-                insert_or_update(&mut trie, &alt, id);
-            }
-
-            for item in kanji_aligns {
-                insert_or_update(&mut kanji_align, &item, id);
-            }
-
-            if let Some(ref i) = iitem.normal_kana {
-                insert_or_update(&mut trie, i, id);
-            }
-
-            index_item.push(item);
-        }
-
-        Self {
-            trie,
-            items: index_item,
-            kanji_align,
-        }
-    }
-
     #[inline]
     pub fn get_item(&self, id: u32) -> &Item {
         &self.items[id as usize]
@@ -116,6 +57,10 @@ impl SuggestionIndex for JapaneseIndex {
     }
 
     fn similar_terms(&self, inp: &str, limit: usize, max_dist: u32) -> Vec<EngineItem> {
+        let inp_len = inp.trim().chars().count();
+        if inp_len <= 1 {
+            return vec![];
+        }
         let query_hash = match jpeudex::Hash::new(inp) {
             Some(h) => h,
             None => return vec![],
@@ -180,11 +125,35 @@ impl KanjiReadingAlign for JapaneseIndex {
     }
 }
 
-fn insert_or_update(trie: &mut Trie<BString, Vec<u32>>, item: &str, id: u32) {
-    if let Some(v) = trie.get_mut_str(item) {
-        v.push(id);
-    } else {
-        trie.insert_str(item, vec![id]);
+impl NGIndexable for JapaneseIndex {
+    fn similar(&self, query: &str, limit: usize) -> Vec<EngineItem> {
+        let q_vec = match self.ngindex.make_query_vec(query) {
+            Some(q) => q,
+            None => return vec![],
+        };
+
+        let mut prio_queue = PrioContainerMax::new(limit);
+
+        let res_iter = self
+            .ngindex
+            .find_qweight(&q_vec, 0.64)
+            .map(|(id, sim)| OrderVal::new(id, FloatOrd(sim)));
+        prio_queue.extend(res_iter);
+
+        let mut out: Vec<_> = prio_queue
+            .into_iter()
+            .map(|i| {
+                let rel = i.0.ord().0;
+                i.0.into_inner()
+                    .into_iter()
+                    .map(|i| EngineItem::new(self.get_item(i), (rel * 1000.0) as u16))
+                    .collect::<Vec<_>>()
+            })
+            .flatten()
+            .collect();
+
+        out.reverse();
+        out
     }
 }
 
