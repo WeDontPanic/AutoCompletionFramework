@@ -48,8 +48,10 @@ impl<'a> Extension<'a> for SimilarTermsExtension<'a> {
     }
 
     #[inline]
-    fn should_run(&self, already_found: usize, _query: &SuggestionQuery) -> bool {
-        self.options.enabled && already_found < self.options.threshold
+    fn should_run(&self, already_found: usize, query: &SuggestionQuery) -> bool {
+        self.options.enabled
+            && already_found < self.options.threshold
+            && query.len() >= self.options.min_query_len
     }
 
     #[inline]

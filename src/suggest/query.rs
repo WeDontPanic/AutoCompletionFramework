@@ -61,6 +61,12 @@ impl<'index, 'ext> SuggestionQuery<'index, 'ext> {
         queue.into_iter().collect::<Vec<_>>()
     }
 
+    /// Returns the amount of characters of the query
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.query_str.chars().count()
+    }
+
     pub fn order_items<'a>(
         &self,
         inp: Vec<EngineItem<'a>>,

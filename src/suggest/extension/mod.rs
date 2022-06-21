@@ -29,6 +29,7 @@ pub struct ExtensionOptions {
     /// Max existing results that can exists in order to get this extension to run
     pub threshold: usize,
     pub weights: RelevanceWeights,
+    pub min_query_len: usize,
 }
 
 impl Default for ExtensionOptions {
@@ -39,6 +40,7 @@ impl Default for ExtensionOptions {
             threshold: 5,
             limit: 30,
             weights: RelevanceWeights::default(),
+            min_query_len: 0,
         }
     }
 }

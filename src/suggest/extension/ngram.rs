@@ -62,8 +62,11 @@ impl<'a> Extension<'a> for NGramExtension<'a> {
         out
     }
 
-    fn should_run(&self, already_found: usize, _query: &SuggestionQuery) -> bool {
-        self.options.enabled && already_found < self.options.threshold
+    #[inline]
+    fn should_run(&self, already_found: usize, query: &SuggestionQuery) -> bool {
+        self.options.enabled
+            && already_found < self.options.threshold
+            && query.len() >= self.options.min_query_len
     }
 
     fn get_options(&self) -> &ExtensionOptions {
