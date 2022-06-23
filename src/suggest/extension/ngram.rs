@@ -34,6 +34,13 @@ impl<'a> NGramExtension<'a> {
             cust_query: None,
         }
     }
+
+    pub fn get_query(&self, query: &'a str) -> &'a str {
+        if self.cust_query.is_some() {
+            return self.cust_query.as_ref().unwrap();
+        }
+        query
+    }
 }
 
 impl<'a> Extension<'a> for NGramExtension<'a> {
@@ -44,10 +51,7 @@ impl<'a> Extension<'a> for NGramExtension<'a> {
 
         let rel_calc = RelevanceCalc::new(self.options.weights).with_total_weight(rel_weight);
 
-        let q_str = match self.cust_query.as_ref() {
-            Some(s) => *s,
-            None => &query.query_str,
-        };
+        let q_str = self.get_query(&query.query_str);
 
         for mut item in self.index.similar(
             q_str,
@@ -71,9 +75,10 @@ impl<'a> Extension<'a> for NGramExtension<'a> {
 
     #[inline]
     fn should_run(&self, already_found: usize, query: &SuggestionQuery) -> bool {
+        let q_str = self.get_query(&query.query_str);
         self.options.enabled
             && already_found < self.options.threshold
-            && query.len() >= self.options.min_query_len
+            && q_str.len() >= self.options.min_query_len
     }
 
     fn get_options(&self) -> &ExtensionOptions {
