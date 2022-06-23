@@ -14,6 +14,7 @@ pub struct NGramExtension<'a> {
     pub query_weigth: f32,
     pub term_limit: usize,
     index: &'a dyn NGIndexable,
+    pub cust_query: Option<&'a str>,
 }
 
 impl<'a> NGramExtension<'a> {
@@ -30,6 +31,7 @@ impl<'a> NGramExtension<'a> {
             sim_threshold: (sim_threshold * 1000.0) as u16,
             query_weigth: 0.6,
             term_limit: 2000,
+            cust_query: None,
         }
     }
 }
@@ -42,8 +44,13 @@ impl<'a> Extension<'a> for NGramExtension<'a> {
 
         let rel_calc = RelevanceCalc::new(self.options.weights).with_total_weight(rel_weight);
 
+        let q_str = match self.cust_query.as_ref() {
+            Some(s) => *s,
+            None => &query.query_str,
+        };
+
         for mut item in self.index.similar(
-            &query.query_str,
+            q_str,
             self.options.limit,
             self.query_weigth,
             self.term_limit,

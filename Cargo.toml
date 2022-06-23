@@ -19,6 +19,7 @@ order_struct = { git = "https://github.com/JojiiOfficial/OrderStruct" }
 eudex = { git = "https://github.com/WeDontPanic/eudex" }
 ngram-tools = { git = "https://github.com/JojiiOfficial/ngram-tools" }
 ngindex = { git = "https://github.com/JojiiOfficial/ngindex" }
+#ngindex = { path = "../ngindex" }
 romaji = "*"
 
 [dev-dependencies]

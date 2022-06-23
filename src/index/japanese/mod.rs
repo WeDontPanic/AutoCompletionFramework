@@ -3,7 +3,6 @@ pub mod item;
 
 pub use item::Item;
 use ngindex::NGIndex;
-use romaji::RomajiExt;
 use serde::{Deserialize, Serialize};
 
 use super::{IndexItem, KanjiReadingAlign, NGIndexable, SuggestionIndex};
@@ -134,8 +133,6 @@ impl NGIndexable for JapaneseIndex {
         q_weight: f32,
         term_limit: usize,
     ) -> Vec<EngineItem> {
-        let query = query.to_romaji();
-        println!("{:?}", query);
         let q_vec = match self.ngindex.make_query_vec(&query) {
             Some(q) => q,
             None => return vec![],

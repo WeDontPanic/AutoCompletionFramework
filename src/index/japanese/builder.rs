@@ -1,7 +1,6 @@
 use super::{Item, JapaneseIndex};
 use ngindex::{builder::NGIndexBuilder, NGIndex};
 use qp_trie::{wrapper::BString, Trie};
-use romaji::RomajiExt;
 use std::collections::{HashMap, HashSet};
 
 /// Helper to build a new japanese autocompletion index
@@ -87,8 +86,10 @@ impl JpIndexBulider {
         }
 
         for reading in readings.iter().map(|i| i.as_ref()) {
-            let reading = reading.to_romaji();
-            self.ng_map.entry(reading).or_default().insert(id);
+            self.ng_map
+                .entry(reading.to_string())
+                .or_default()
+                .insert(id);
         }
     }
 

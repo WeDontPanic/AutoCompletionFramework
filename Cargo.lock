@@ -436,7 +436,7 @@ checksum = "e4a24736216ec316047a1fc4252e27dabb04218aa4a3f37c6e7ddbf1f9782b54"
 [[package]]
 name = "ngindex"
 version = "0.1.0"
-source = "git+https://github.com/JojiiOfficial/ngindex#75df023917ef5221b0ad6863334e9159f96d4220"
+source = "git+https://github.com/JojiiOfficial/ngindex#5e0a15b39dc82549b4beb3ed7481f8592ffd0527"
 dependencies = [
  "ngram-tools",
  "serde",
