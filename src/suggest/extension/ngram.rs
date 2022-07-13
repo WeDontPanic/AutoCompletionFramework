@@ -14,7 +14,7 @@ pub struct NGramExtension<'a> {
     pub query_weigth: f32,
     pub term_limit: usize,
     index: &'a dyn NGIndexable,
-    pub cust_query: Option<&'a str>,
+    pub cust_query: Option<String>,
 }
 
 impl<'a> NGramExtension<'a> {
@@ -35,7 +35,7 @@ impl<'a> NGramExtension<'a> {
         }
     }
 
-    pub fn get_query(&self, query: &'a str) -> &'a str {
+    pub fn get_query(&'a self, query: &'a str) -> &'a str {
         if self.cust_query.is_some() {
             return self.cust_query.as_ref().unwrap();
         }
